@@ -17,10 +17,10 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Use Tsinghua Ubuntu mirrors for apt packages.
 RUN sed -i \
-      -e 's@http://archive.ubuntu.com/ubuntu/@https://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
-      -e 's@http://security.ubuntu.com/ubuntu/@https://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
-      -e 's@https://archive.ubuntu.com/ubuntu/@https://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
-      -e 's@https://security.ubuntu.com/ubuntu/@https://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
+      -e 's@http://archive.ubuntu.com/ubuntu/@http://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
+      -e 's@http://security.ubuntu.com/ubuntu/@http://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
+      -e 's@https://archive.ubuntu.com/ubuntu/@http://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
+      -e 's@https://security.ubuntu.com/ubuntu/@http://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
       /etc/apt/sources.list.d/ubuntu.sources
 
 # System tooling only - Python 3.14 comes from uv (python-build-standalone),

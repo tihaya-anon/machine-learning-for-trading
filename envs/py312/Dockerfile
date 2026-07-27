@@ -27,10 +27,10 @@ ENV PIP_INDEX_URL=https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
 RUN sed -i \
-      -e 's@http://deb.debian.org/debian@https://mirrors.tuna.tsinghua.edu.cn/debian@g' \
-      -e 's@http://deb.debian.org/debian-security@https://mirrors.tuna.tsinghua.edu.cn/debian-security@g' \
-      -e 's@https://deb.debian.org/debian@https://mirrors.tuna.tsinghua.edu.cn/debian@g' \
-      -e 's@https://deb.debian.org/debian-security@https://mirrors.tuna.tsinghua.edu.cn/debian-security@g' \
+      -e 's@http://deb.debian.org/debian@http://mirrors.tuna.tsinghua.edu.cn/debian@g' \
+      -e 's@http://deb.debian.org/debian-security@http://mirrors.tuna.tsinghua.edu.cn/debian-security@g' \
+      -e 's@https://deb.debian.org/debian@http://mirrors.tuna.tsinghua.edu.cn/debian@g' \
+      -e 's@https://deb.debian.org/debian-security@http://mirrors.tuna.tsinghua.edu.cn/debian-security@g' \
       /etc/apt/sources.list.d/debian.sources
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
