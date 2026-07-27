@@ -200,3 +200,5 @@ case_studies/*/catalog/*.json
 # roborev snapshots and the local review-agent config
 /.roborev/
 /.roborev.toml
+
+*.pdf
