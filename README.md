@@ -367,6 +367,14 @@ docker compose pull ml4t # Option A — Docker (recommended)
 pip install uv && uv sync # Option B — local with uv
 ```
 
+If you only want to download data locally while using Docker for notebooks, install
+the lightweight data-download dependency group instead of the full notebook stack:
+
+```bash
+export UV_PROJECT_ENVIRONMENT=.venv-data
+uv sync --only-group data-download --no-install-project
+```
+
 See the **[installation guide](docs/installation.md)** for platform-specific setup (Linux, Windows WSL2, macOS) and GPU
 instructions. Windows readers: WSL2 must be working *before* Docker Desktop is installed, and the
 reboot is not optional.

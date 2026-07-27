@@ -12,10 +12,14 @@ Each dataset has its own directory with a download script, loader, config, and e
 # 1. Set data path in repository root .env file
 ML4T_DATA_PATH=/path/to/your/data
 
-# 2. Download free datasets (no API keys needed)
-uv run python data/download_all.py --free-only
+# 2. Use a separate lightweight environment for data downloads
+export UV_PROJECT_ENVIRONMENT=.venv-data
+uv sync --only-group data-download --no-install-project
 
-# 3. Use in notebooks
+# 3. Download free datasets (no API keys needed)
+uv run --only-group data-download --no-install-project python data/download_all.py --free-only
+
+# 4. Use in notebooks
 from data import load_etfs
 df = load_etfs()
 ```
@@ -86,15 +90,15 @@ download URL and instructions will be published before launch.
 ```bash
 # All free datasets at once (includes the ~1.5 GB firm-characteristics
 # dataset; add --skip-firm-characteristics to leave it out)
-uv run python data/download_all.py --free-only
+uv run --only-group data-download --no-install-project python data/download_all.py --free-only
 
 # Individual datasets (from repo root)
-uv run python data/etfs/market/download.py                           # ~30s
-uv run python data/crypto/market/download.py                         # ~10-15 min (see note)
-uv run python data/factors/ff_download.py                     # ~5s
-uv run python data/factors/aqr_download.py                    # ~5s
-uv run python data/equities/firm_characteristics/download.py  # ~1.5 GB, largest free dataset; downloads + converts (minutes, bandwidth-dependent)
-uv run python data/futures/positioning/cot_download.py                    # ~2-3 min (CFTC CoT)
+uv run --only-group data-download --no-install-project python data/etfs/market/download.py                  # ~30s
+uv run --only-group data-download --no-install-project python data/crypto/market/download.py                # ~10-15 min (see note)
+uv run --only-group data-download --no-install-project python data/factors/ff_download.py                   # ~5s
+uv run --only-group data-download --no-install-project python data/factors/aqr_download.py                  # ~5s
+uv run --only-group data-download --no-install-project python data/equities/firm_characteristics/download.py # ~1.5 GB, largest free dataset
+uv run --only-group data-download --no-install-project python data/futures/positioning/cot_download.py      # ~2-3 min (CFTC CoT)
 ```
 
 **Note on crypto download time**: The Binance public API returns max 1,500 rows per request with ~1s server response time. Downloading 5 years of hourly data for 19 symbols requires ~700 API calls. Downloads run in parallel (5 concurrent), but the total still takes 10-15 minutes. This is a Binance server-side rate limit, not a bug.
@@ -103,22 +107,22 @@ uv run python data/futures/positioning/cot_download.py                    # ~2-3
 
 ```bash
 # FRED macro indicators
-uv run python data/macro/download.py
+uv run --only-group data-download --no-install-project python data/macro/download.py
 
 # US Equities (NASDAQ Data Link — frozen, ends 2018)
-uv run python data/equities/market/us_equities/download.py
+uv run --only-group data-download --no-install-project python data/equities/market/us_equities/download.py
 
 # FX pairs (OANDA)
-uv run python data/fx/market/download.py              # 4-hourly (default)
-uv run python data/fx/market/download.py --daily      # Daily
+uv run --only-group data-download --no-install-project python data/fx/market/download.py              # 4-hourly (default)
+uv run --only-group data-download --no-install-project python data/fx/market/download.py --daily      # Daily
 ```
 
 ### Paid API Key (Databento)
 
 ```bash
 # CME Futures — ALWAYS estimate cost first!
-uv run python data/futures/market/download.py --estimate-only
-uv run python data/futures/market/download.py
+uv run --only-group data-download --no-install-project python data/futures/market/download.py --estimate-only
+uv run --only-group data-download --no-install-project python data/futures/market/download.py
 ```
 
 ### Manual Download (Databento Download Center)
@@ -136,7 +140,7 @@ for users who already have a `DATABENTO_API_KEY`.
 Extend datasets beyond the default end date:
 
 ```bash
-uv run python data/download_all.py --update
+uv run --only-group data-download --no-install-project python data/download_all.py --update
 ```
 
 ---
