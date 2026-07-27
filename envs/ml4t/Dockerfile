@@ -83,6 +83,9 @@ RUN /opt/ml4t/bin/pip install --no-cache-dir \
 # Force protobuf 5+ which uses the pure-Python descriptor pool.
 RUN /opt/ml4t/bin/pip install --no-cache-dir "protobuf>=5.0"
 
+# JupyterLab theme.
+RUN /opt/ml4t/bin/pip install --no-cache-dir "catppuccin-jupyterlab"
+
 WORKDIR /app
 ENV PATH="/opt/ml4t/bin:$PATH"
 ENV PYTHONPATH="/app"
