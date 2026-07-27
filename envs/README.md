@@ -4,16 +4,17 @@ Pre-built images are available on Docker Hub (`docker.io/ml4t/`). Most readers n
 
 ## Images
 
-| Image | Docker Hub | Python | Platforms | Size |
+| Image | Docker Hub | Python | Platforms | Notes |
 |-------|-----------|--------|-----------|------|
-| **ml4t** | `ml4t/ml4t:latest` | 3.14 | amd64 + arm64 | ~12 GB / ~3 GB |
+| **ml4t** | `ml4t/ml4t:latest` | 3.14 | amd64 + arm64 | CPU-only |
+| **ml4t-gpu** | `ml4t/ml4t-gpu:latest` | 3.14 | amd64 + NVIDIA GPU | CUDA 12.8 |
 | **py312** | `ml4t/ml4t-py312:latest` | 3.12 | amd64 only | ~9.6 GB |
 | **benchmark** | `ml4t/ml4t-benchmark:latest` | 3.14 | amd64 + arm64 | ~1.7 GB |
 | **rapids** | (build locally) | 3.12 | amd64 + NVIDIA GPU | ~15 GB |
 
 ### ml4t (Main)
 
-Covers all 27 chapters and 9 case studies. Includes PyTorch with CUDA 12.8 support, LightGBM, scikit-learn, Polars, Plotly, and all ML4T libraries.
+Covers all 27 chapters and 9 case studies. Includes CPU-only PyTorch, LightGBM, scikit-learn, Polars, Plotly, and all ML4T libraries.
 
 ```bash
 docker compose pull ml4t
@@ -21,9 +22,10 @@ docker compose up ml4t                    # Jupyter Lab at http://localhost:8888
 docker compose run --rm ml4t python nb.py # Run a notebook directly
 ```
 
-GPU passthrough (same image, NVIDIA runtime required):
+GPU image (separate image, NVIDIA runtime required):
 
 ```bash
+docker compose --profile gpu pull ml4t-gpu
 docker compose --profile gpu run --rm ml4t-gpu python notebook.py
 ```
 
@@ -85,6 +87,7 @@ docker compose --profile rapids run --rm rapids python 12_gradient_boosting/02_g
 envs/
 ├── README.md                  # This file
 ├── ml4t/Dockerfile            # Main image (Python 3.14)
+├── ml4t-gpu/Dockerfile        # GPU image (Python 3.14, CUDA PyTorch + LightGBM CUDA)
 ├── py312/
 │   ├── Dockerfile             # Python 3.12 for signatory/esig/gensim/pfhedge/tfcausalimpact
 │   └── pyproject.toml         # py312-specific dependencies
@@ -132,7 +135,8 @@ The test groups packages by chapter, so failures map directly to which notebooks
 If you prefer to build from source instead of pulling from Docker Hub:
 
 ```bash
-docker compose build ml4t                       # ~45 min on x86, ~15 min on ARM64
+docker compose build ml4t                       # CPU image
+docker compose --profile gpu build ml4t-gpu     # GPU image, linux/amd64 only
 docker compose --profile py312 build py312      # ~30 min
 docker compose --profile benchmark build benchmark  # ~10 min
 ```

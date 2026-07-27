@@ -23,6 +23,15 @@ FROM python:3.12-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
+ENV PIP_INDEX_URL=https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+RUN sed -i \
+      -e 's@http://deb.debian.org/debian@https://mirrors.tuna.tsinghua.edu.cn/debian@g' \
+      -e 's@http://deb.debian.org/debian-security@https://mirrors.tuna.tsinghua.edu.cn/debian-security@g' \
+      -e 's@https://deb.debian.org/debian@https://mirrors.tuna.tsinghua.edu.cn/debian@g' \
+      -e 's@https://deb.debian.org/debian-security@https://mirrors.tuna.tsinghua.edu.cn/debian-security@g' \
+      /etc/apt/sources.list.d/debian.sources
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -42,7 +51,8 @@ RUN /opt/ml4t/bin/pip install --no-cache-dir pip setuptools wheel
 
 WORKDIR /build
 COPY envs/py312/pyproject.toml /build/
-RUN uv pip install --python /opt/ml4t/bin/python --no-cache /build
+RUN uv pip install --python /opt/ml4t/bin/python --no-cache \
+    --default-index https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple /build
 
 # x86-only signature stack (signatory + esig) for Ch05/Ch09 notebooks
 RUN /opt/ml4t/bin/pip install --no-cache-dir --no-build-isolation "signatory>=1.2" && \
@@ -54,7 +64,8 @@ RUN /opt/ml4t/bin/pip install --no-cache-dir --no-build-isolation "signatory>=1.
 # interpreters inside the same reader image.
 RUN python -m venv /opt/bsts
 COPY envs/py312/bsts-pyproject.toml /build/bsts/pyproject.toml
-RUN uv pip install --python /opt/bsts/bin/python --no-cache /build/bsts && \
+RUN uv pip install --python /opt/bsts/bin/python --no-cache \
+    --default-index https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple /build/bsts && \
     /opt/bsts/bin/python -m ipykernel install --prefix=/opt/bsts --name python3 \
         --display-name "Python 3.12 (BSTS)" && \
     /opt/bsts/bin/python -c "import importlib.metadata as m; import causalimpact; assert m.version('tfcausalimpact') == '0.0.18'"

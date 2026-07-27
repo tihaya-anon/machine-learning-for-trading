@@ -16,9 +16,20 @@
 FROM nvcr.io/nvidia/rapidsai/base:25.04-cuda12.8-py3.12
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PIP_INDEX_URL=https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # RAPIDS base image may run as non-root; switch to root for installs
 USER root
+
+RUN if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then \
+      sed -i \
+        -e 's@http://archive.ubuntu.com/ubuntu/@https://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
+        -e 's@http://security.ubuntu.com/ubuntu/@https://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
+        -e 's@https://archive.ubuntu.com/ubuntu/@https://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
+        -e 's@https://security.ubuntu.com/ubuntu/@https://mirrors.tuna.tsinghua.edu.cn/ubuntu/@g' \
+        /etc/apt/sources.list.d/ubuntu.sources; \
+    fi
 
 # System deps for LightGBM CUDA build
 RUN apt-get update && apt-get install -y --no-install-recommends \

@@ -1,20 +1,21 @@
 # ML4T 3rd Edition — Docker Compose Configuration
 #
 # QUICK START (pre-built images from Docker Hub):
-#   docker compose pull ml4t         # Pull pre-built image (~12 GB amd64, ~3 GB arm64)
+#   docker compose pull ml4t         # Pull pre-built CPU image
 #   docker compose up ml4t           # Start Jupyter Lab at http://localhost:8888
 #
 # To build locally instead:
-#   docker compose build ml4t        # Build from Dockerfile (slow, ~45 min)
+#   docker compose build ml4t        # Build CPU image from Dockerfile
 #
 # PLATFORM SUPPORT:
-#   - Linux x86_64:     All services work, GPU optional
+#   - Linux x86_64:     All services work, GPU via ml4t-gpu/rapids profiles
 #   - Windows x86_64:   All services via Docker Desktop (WSL2), GPU via WSL2+nvidia-toolkit
 #   - macOS Intel:      All services except GPU
 #   - Apple Silicon:    ml4t + benchmark (native arm64); ml4t-py312 not available (see below)
 #
 # IMAGES ON DOCKER HUB (docker.io/ml4t/):
-#   ml4t:latest           — All chapters, Python 3.14, PyTorch CUDA 12.8 (amd64+arm64)
+#   ml4t:latest           — All chapters, Python 3.14, CPU-only PyTorch (amd64+arm64)
+#   ml4t-gpu:latest       — All chapters, Python 3.14, CUDA PyTorch + LightGBM CUDA (amd64)
 #   ml4t-py312:latest     — Python 3.12: signatory, esig, gensim, tfcausalimpact (amd64 only)
 #   ml4t-benchmark:latest — Storage benchmarks: DuckDB, HDF5, DB clients (amd64+arm64)
 #
@@ -58,7 +59,7 @@ x-common: &common
 
 services:
   # ============================================
-  # ML4T MAIN (All Chapters)
+  # ML4T MAIN (All Chapters, CPU-only PyTorch)
   # Works on all platforms including Apple Silicon
   # ============================================
   ml4t:
@@ -74,14 +75,16 @@ services:
 
   # ============================================
   # ML4T GPU (NVIDIA only — Linux/Windows x86)
-  # Same as ml4t but with GPU passthrough
+  # Separate image with CUDA PyTorch + LightGBM CUDA
   # ============================================
   ml4t-gpu:
     <<: *common
-    image: ml4t/ml4t:latest
+    image: ml4t/ml4t-gpu:latest
     build:
       context: .
-      dockerfile: envs/ml4t/Dockerfile
+      dockerfile: envs/ml4t-gpu/Dockerfile
+      platforms:
+        - linux/amd64
     container_name: ml4t-review-gpu
     ports:
       - "127.0.0.1:8889:8888"

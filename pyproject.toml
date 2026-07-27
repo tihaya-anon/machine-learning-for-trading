@@ -248,6 +248,23 @@ override-dependencies = [
     "protobuf>=5.0",
 ]
 
+# Default Linux/Windows PyTorch installs should resolve from the CPU wheel index
+# so `uv sync` does not pull the CUDA-enabled PyPI wheels and their nvidia-* deps.
+# macOS keeps the normal PyPI wheels because they are already CPU/Metal-only.
+# BEGIN: PyTorch CPU-only default source
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", marker = "platform_system == 'Linux' or platform_system == 'Windows'" },
+]
+# END: PyTorch CPU-only default source
+
+# BEGIN: PyTorch CPU-only index
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+# END: PyTorch CPU-only index
+
 [build-system]
 requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
